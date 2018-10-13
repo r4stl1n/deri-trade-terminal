@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>889</width>
+    <height>515</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>889</width>
+    <height>515</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>889</width>
+    <height>515</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Deribit Trade Terminal</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="orderTabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>330</y>
+      <width>561</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="tabBarAutoHide">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="marketOrderTab">
+     <attribute name="title">
+      <string>MarketOrder</string>
+     </attribute>
+     <widget class="QPushButton" name="marketBuyButton">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>121</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: green</string>
+      </property>
+      <property name="text">
+       <string>Market Buy</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="closePositionButton">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>10</y>
+        <width>271</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: yellow</string>
+      </property>
+      <property name="text">
+       <string>Close Position</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="marketSellButton">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>10</y>
+        <width>121</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: red</string>
+      </property>
+      <property name="text">
+       <string>Market Sell</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="limitOrderTab">
+     <attribute name="title">
+      <string>Limit Order</string>
+     </attribute>
+     <widget class="QPushButton" name="limitBuyButton">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>121</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: green</string>
+      </property>
+      <property name="text">
+       <string>Limit Buy</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="closePositionButton2">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>70</y>
+        <width>271</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: yellow</string>
+      </property>
+      <property name="text">
+       <string>Close Positions</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="limitSellButton">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>10</y>
+        <width>121</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: red</string>
+      </property>
+      <property name="text">
+       <string>Limit Sell</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>10</y>
+        <width>271</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Price</string>
+      </property>
+      <widget class="QLineEdit" name="limitPriceInput">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>231</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>561</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Current Positions</string>
+    </property>
+    <widget class="QTableWidget" name="currentPositionsTable">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>541</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="autoScroll">
+      <bool>false</bool>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <column>
+      <property name="text">
+       <string>Account</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Direction</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Size</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Avg Price</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>PNL</string>
+      </property>
+     </column>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>561</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Open Orders</string>
+    </property>
+    <widget class="QTableWidget" name="openOrderTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>411</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <column>
+      <property name="text">
+       <string>Account</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Direction</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Size</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Price</string>
+      </property>
+     </column>
+    </widget>
+    <widget class="QPushButton" name="closeOrdersButton">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>20</y>
+       <width>121</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: teal</string>
+     </property>
+     <property name="text">
+      <string>Close Orders</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>10</y>
+      <width>311</width>
+      <height>461</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Orderbook</string>
+    </property>
+    <widget class="QTableWidget" name="orderbookTable">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>291</width>
+       <height>431</height>
+      </rect>
+     </property>
+     <property name="autoScroll">
+      <bool>false</bool>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Price</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Size</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Total</string>
+      </property>
+     </column>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>889</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionWallets"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionWallets">
+   <property name="text">
+    <string>Wallets</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
