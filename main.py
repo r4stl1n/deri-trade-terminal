@@ -1,17 +1,22 @@
 import sys
 import time
 
+from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from deriui import Ui_MainWindow
 
+from PyQt5 import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
  
 
 from deritradeterminal.util.deribit_api import RestClient
+from deritradeterminal.util.QDarkPalette import QDarkPalette
+
 from deritradeterminal.managers.ConfigManager import ConfigManager
+
 
 class PositionsUpdateThread(QThread):
 
@@ -147,7 +152,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.orderbookTable.insertRow(index)
             index = index + 1
 
-        self.orderbookTable.setColumnCount(13)
+        self.orderbookTable.setRowCount(25)
         self.openOrderTable.setColumnCount(4)
 
         self.positionsThread = PositionsUpdateThread()
@@ -173,6 +178,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.closeOrdersButton.clicked.connect(self.do_close_orders)
 
+        self.webView = QtWebEngineWidgets.QWebEngineView(self)
+        self.webView.setUrl(QtCore.QUrl("https://www.deribit.com/ftu_chart?instr=BTC-PERPETUAL"))
+        self.webView.setObjectName("webView")
+
+        self.horizontalLayout_4.addWidget(self.webView)
+        self.horizontalLayout_4.removeWidget(self.placeHolderFrame)
+        self.placeHolderFrame.deleteLater()
+
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
@@ -189,8 +202,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_order_book(self, bids, asks, mark, indexprice):
         try:
 
-            cBids = bids[:6]
-            cAsks = asks[:6][::-1]
+            cBids = bids[:12]
+            cAsks = asks[:12][::-1]
 
             index = 0
 
@@ -199,25 +212,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.orderbookTable.setItem(index, 1, QTableWidgetItem(str(ask['quantity'])))
                 self.orderbookTable.setItem(index, 2, QTableWidgetItem(str(ask['cm_amount'])))
 
-                self.orderbookTable.item(index, 0).setBackground(QColor(254,245,245))
-                self.orderbookTable.item(index, 1).setBackground(QColor(254,245,245))
-                self.orderbookTable.item(index, 2).setBackground(QColor(254,245,245))
 
                 index = index + 1
 
-            index = 7
-            self.orderbookTable.setItem(6, 0, QTableWidgetItem("M: " + str(mark)))
-            self.orderbookTable.setItem(6, 1, QTableWidgetItem(""))
-            self.orderbookTable.setItem(6, 2, QTableWidgetItem("I: " + str(indexprice)))
+            index = 13
+            self.orderbookTable.setItem(12, 0, QTableWidgetItem("M: " + str(mark)))
+            self.orderbookTable.setItem(12, 1, QTableWidgetItem(""))
+            self.orderbookTable.setItem(12, 2, QTableWidgetItem("I: " + str(indexprice)))
 
             for bid in cBids:
                 self.orderbookTable.setItem(index, 0, QTableWidgetItem(str(bid['price'])))
                 self.orderbookTable.setItem(index, 1, QTableWidgetItem(str(bid['quantity'])))
                 self.orderbookTable.setItem(index, 2, QTableWidgetItem(str(bid['cm_amount'])))
-                
-                self.orderbookTable.item(index, 0).setBackground(QColor(245,251,248))
-                self.orderbookTable.item(index, 1).setBackground(QColor(245,251,248))
-                self.orderbookTable.item(index, 2).setBackground(QColor(245,251,248))
 
                 index = index + 1
 
@@ -357,6 +363,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 def main():
     ConfigManager.get_config()
     app = QApplication(sys.argv)
+    app.setStyle('fusion')
+
+    dark_palette = QDarkPalette()
+
+    dark_palette.set_app(app)
+
+
     main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec_())
