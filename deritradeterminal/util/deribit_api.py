@@ -22,7 +22,8 @@ class RestClient(object):
                 raise Exception("Key or secret empty")
 
             signature = self.generate_signature(action, data)
-            response = self.session.post(self.url + action, data=data, headers={'x-deribit-sig': signature}, verify=True)
+            response = requests.post(self.url + action, data=data, headers={'x-deribit-sig': signature}, verify=True)
+
         else:
             response = self.session.get(self.url + action, params=data, verify=True)
         
@@ -118,6 +119,7 @@ class RestClient(object):
             "quantity": quantity,
             "price": price,
             "type": ordertype
+
         }
   
         if label:
@@ -125,6 +127,8 @@ class RestClient(object):
 
         if postOnly:
             options["postOnly"] = postOnly
+
+        print(options)
 
         return self.request("/api/v1/private/buy", options)
 
@@ -136,6 +140,8 @@ class RestClient(object):
             "price": price,
             "type": ordertype
         }
+
+
 
         if label:
             options["label"] = label
@@ -176,14 +182,6 @@ class RestClient(object):
             options["orderId"] = orderId
 
         return self.request("/api/v1/private/getopenorders", options)
-
-    def getorderstate(self, orderId=None):
-        options = {}
-
-        if orderId:
-            options["orderId"] = orderId
-
-        return self.request("/api/v1/private/orderstate", options)  
 
 
     def positions(self):
