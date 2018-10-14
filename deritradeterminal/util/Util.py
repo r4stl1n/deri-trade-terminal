@@ -4,6 +4,10 @@ import logging
 import logging.handlers
 from datetime import datetime
 
+from PyQt5 import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 
 
 class Util:
@@ -64,3 +68,19 @@ ______          _ _____ _          _ _
         return []
       else:
         return tosplit.split(' ')
+    
+    @staticmethod
+    def show_info_dialog(parent, title, text):
+      
+       msg = QMessageBox()
+       msg.setIcon(QMessageBox.Information)
+
+       msg.setText(text)
+       msg.setWindowTitle(title)
+       p = parent.frameGeometry().center() - QtCore.QRect(QtCore.QPoint(), msg.sizeHint()).center()
+       msg.move(p)
+      
+       retval = msg.exec_()
+       print "value of pressed message box button:", retval
+
+

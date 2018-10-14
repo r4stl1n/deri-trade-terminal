@@ -134,13 +134,13 @@
   <widget class="QDockWidget" name="dockWidget_5">
    <property name="minimumSize">
     <size>
-     <width>360</width>
+     <width>328</width>
      <height>236</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>360</width>
+     <width>328</width>
      <height>236</height>
     </size>
    </property>
@@ -161,7 +161,7 @@
      <item>
       <widget class="QTabWidget" name="orderTabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="tabBarAutoHide">
         <bool>false</bool>
@@ -175,7 +175,7 @@
           <rect>
            <x>10</x>
            <y>130</y>
-           <width>91</width>
+           <width>81</width>
            <height>31</height>
           </rect>
          </property>
@@ -189,9 +189,9 @@
         <widget class="QPushButton" name="closePositionButton">
          <property name="geometry">
           <rect>
-           <x>110</x>
+           <x>100</x>
            <y>130</y>
-           <width>111</width>
+           <width>101</width>
            <height>31</height>
           </rect>
          </property>
@@ -199,18 +199,18 @@
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: yellow</string>
+          <string notr="true"/>
          </property>
          <property name="text">
-          <string>Close Position</string>
+          <string>Close Positions</string>
          </property>
         </widget>
         <widget class="QPushButton" name="marketSellButton">
          <property name="geometry">
           <rect>
-           <x>230</x>
+           <x>210</x>
            <y>130</y>
-           <width>91</width>
+           <width>81</width>
            <height>31</height>
           </rect>
          </property>
@@ -229,7 +229,7 @@
           <rect>
            <x>10</x>
            <y>60</y>
-           <width>311</width>
+           <width>281</width>
            <height>61</height>
           </rect>
          </property>
@@ -244,7 +244,7 @@
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>291</width>
+            <width>261</width>
             <height>20</height>
            </rect>
           </property>
@@ -258,19 +258,19 @@
           <rect>
            <x>10</x>
            <y>0</y>
-           <width>311</width>
+           <width>281</width>
            <height>61</height>
           </rect>
          </property>
          <property name="title">
           <string>Account Selection</string>
          </property>
-         <widget class="QComboBox" name="comboBox">
+         <widget class="QComboBox" name="marketOrderComboBox">
           <property name="geometry">
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>291</width>
+            <width>261</width>
             <height>22</height>
            </rect>
           </property>
@@ -291,7 +291,7 @@
           <rect>
            <x>10</x>
            <y>130</y>
-           <width>91</width>
+           <width>81</width>
            <height>31</height>
           </rect>
          </property>
@@ -305,9 +305,9 @@
         <widget class="QPushButton" name="closePositionButton2">
          <property name="geometry">
           <rect>
-           <x>110</x>
+           <x>100</x>
            <y>130</y>
-           <width>111</width>
+           <width>101</width>
            <height>31</height>
           </rect>
          </property>
@@ -315,7 +315,7 @@
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: yellow</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Close Positions</string>
@@ -324,9 +324,9 @@
         <widget class="QPushButton" name="limitSellButton">
          <property name="geometry">
           <rect>
-           <x>230</x>
+           <x>210</x>
            <y>130</y>
-           <width>91</width>
+           <width>81</width>
            <height>31</height>
           </rect>
          </property>
@@ -345,7 +345,7 @@
           <rect>
            <x>10</x>
            <y>60</y>
-           <width>311</width>
+           <width>281</width>
            <height>61</height>
           </rect>
          </property>
@@ -357,7 +357,7 @@
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>291</width>
+            <width>261</width>
             <height>20</height>
            </rect>
           </property>
@@ -368,19 +368,19 @@
           <rect>
            <x>10</x>
            <y>0</y>
-           <width>311</width>
+           <width>281</width>
            <height>61</height>
           </rect>
          </property>
          <property name="title">
           <string>Account Selection</string>
          </property>
-         <widget class="QComboBox" name="comboBox_2">
+         <widget class="QComboBox" name="limitOrderComboBox">
           <property name="geometry">
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>291</width>
+            <width>261</width>
             <height>22</height>
            </rect>
           </property>
@@ -394,7 +394,7 @@
        </widget>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
-         <string>Stop Market Order</string>
+         <string>Stop Order</string>
         </attribute>
        </widget>
       </widget>

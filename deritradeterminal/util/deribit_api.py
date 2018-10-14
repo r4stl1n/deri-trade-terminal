@@ -128,8 +128,6 @@ class RestClient(object):
         if postOnly:
             options["postOnly"] = postOnly
 
-        print(options)
-
         return self.request("/api/v1/private/buy", options)
 
 

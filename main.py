@@ -1,5 +1,5 @@
 import sys
-import time
+import threading
 
 from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -10,128 +10,17 @@ from PyQt5 import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
- 
 
-from deritradeterminal.util.deribit_api import RestClient
+from deritradeterminal.util.Util import Util
+
 from deritradeterminal.util.QDarkPalette import QDarkPalette
 
+from deritradeterminal.managers.TradeManager import TradeManager
 from deritradeterminal.managers.ConfigManager import ConfigManager
 
-
-class PositionsUpdateThread(QThread):
-
-    signeler = pyqtSignal(int,str,str,str,str,str) 
-
-    def collectProcessData(self):
-        config = ConfigManager.get_config()
-
-        index = 0
-
-        for x in config.tradeApis:
-
-            client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-
-            cposition = client.positions()
-
-            if len(cposition) >= 1:
-
-                position = cposition[0]
-
-                direction = ""
-                
-                if position['direction'] == "buy":
-                    direction = "Long"
-                else:
-                    direction = "Short"
-
-                self.signeler.emit(index, x, direction, str(position["size"]), str(format(position["averagePrice"], '.4f')), str(format(position["profitLoss"], '.8f')))
-
-            else:
-                self.signeler.emit(index, x, "No Position", "", "", "")
-
-            index = index + 1
-
-    def __init__(self):
-        QThread.__init__(self)
-
-
-    def run(self):
-        while True:
-            self.collectProcessData()
-
-class OrdersUpdateThread(QThread):
-
-    signeler = pyqtSignal(list) 
-
-    orders = None
-
-    def collectProcessData(self):
-
-        config = ConfigManager.get_config()
-
-        openOrders = []
-
-        for x in config.tradeApis:
-
-            client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-
-            orders = client.getopenorders()
-
-            if len(orders) >= 1:
-
-                for order in orders:
-
-                    direction = ""
-                    
-                    if order['direction'] == "buy":
-                        direction = "Long"
-                    else:
-                        direction = "Short"
-
-                    openOrders.append([x, direction, str(order["quantity"]), str(format(order["price"], '.2f'))])
-
-        
-        self.signeler.emit(openOrders)
-
-    def __init__(self):
-        QThread.__init__(self)
-
-
-    def run(self):
-        while True:
-            self.collectProcessData()
-
-class OrderBookUpdateThread(QThread):
-
-    signeler = pyqtSignal(list, list, str, str) 
-
-    def collectProcessData(self):
-
-        config = ConfigManager.get_config()
-
-        index = 0
-
-        if len(config.tradeApis) > 1:
-            
-            creds = list(config.tradeApis.values())[0]
-
-            client = RestClient(creds[0], creds[1], ConfigManager.get_config().apiUrl)
-
-            orderbook = client.getorderbook(ConfigManager.get_config().tradeInsturment) 
-
-            indexPrice = client.index()['btc']
-
-            self.signeler.emit(orderbook['bids'], orderbook['asks'], str(format(orderbook['mark'], '.2f')), str(format(indexPrice, '.2f')))
-
-            index = index + 1
-
-    def __init__(self):
-        QThread.__init__(self)
-
-
-    def run(self):
-        while True:
-            self.collectProcessData()
+from deritradeterminal.threads.OrdersUpdateThread import OrdersUpdateThread
+from deritradeterminal.threads.OrderBookUpdateThread import OrderBookUpdateThread
+from deritradeterminal.threads.PositionsUpdateThread import PositionsUpdateThread
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -141,9 +30,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def firstRun(self):
         config = ConfigManager.get_config()
         index = 0
+
         for x in config.tradeApis:
             self.currentPositionsTable.insertRow(index)
             index = index + 1
+
+            # Add options to the acction selection
+            self.limitOrderComboBox.addItem(x)
+            self.marketOrderComboBox.addItem(x)
+
 
         self.currentPositionsTable.setColumnCount(5)
 
@@ -176,7 +71,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.limitBuyButton.clicked.connect(self.do_limit_buy_button)
         self.limitSellButton.clicked.connect(self.do_limit_sell_button)
 
-        self.closeOrdersButton.clicked.connect(self.do_close_orders)
+        self.closeOrdersButton.clicked.connect(self.do_cancel_all_open_orders)
 
         self.webView = QtWebEngineWidgets.QWebEngineView(self)
         self.webView.setUrl(QtCore.QUrl("https://www.deribit.com/ftu_chart?instr=BTC-PERPETUAL"))
@@ -185,6 +80,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.horizontalLayout_4.addWidget(self.webView)
         self.horizontalLayout_4.removeWidget(self.placeHolderFrame)
         self.placeHolderFrame.deleteLater()
+
+
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -263,13 +160,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def do_market_buy_button(self):
 
         try:
-            config = ConfigManager.get_config()
 
-            for x in config.tradeApis:
+            selection = str(self.marketOrderComboBox.currentText())
 
-                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-                client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[x][2], 0, "market")
-                time.sleep(0.5)
+            if selection == "All":
+
+                threading.Thread(target=TradeManager.market_buy_all).start()
+
+                Util.show_info_dialog(self, "Order Info", "Market Buy Executed On All Accounts")
+
+            else:
+                threading.Thread(target=TradeManager.market_buy, args=(selection,)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Market Buy Executed On Account " + selection)
+
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -280,13 +184,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
-            config = ConfigManager.get_config()
+            selection = str(self.marketOrderComboBox.currentText())
 
-            for x in config.tradeApis:
+            if selection == "All":
 
-                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-                client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[x][2], 0, "market")
-                time.sleep(0.5)
+                threading.Thread(target=TradeManager.market_sell_all).start()
+
+                Util.show_info_dialog(self, "Order Info", "Market Sell Executed On All Accounts")
+
+            else:
+                threading.Thread(target=TradeManager.market_sell, args=(selection,)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Market Sell Executed On Account " + selection)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -297,13 +206,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
-            config = ConfigManager.get_config()
+            selection = str(self.limitOrderComboBox.currentText())
 
-            for x in config.tradeApis:
+            if selection == "All":
+                
+                threading.Thread(target=TradeManager.limit_buy_all, args=(self.limitPriceInput.text(),)).start()
+                
+                Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On All Accounts")
 
-                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-                client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[x][2], float(self.limitPriceInput.text()), "limit")
-                time.sleep(0.5)
+            else:
+                
+                threading.Thread(target=TradeManager.limit_buy, args=(selection, self.limitPriceInput.text(),)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On Account " + selection)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -314,13 +229,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
-            config = ConfigManager.get_config()
+            selection = str(self.limitOrderComboBox.currentText())
 
-            for x in config.tradeApis:
+            if selection == "All":
 
-                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-                client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[x][2], float(self.limitPriceInput.text()), "limit")
-                time.sleep(0.5)
+                threading.Thread(target=TradeManager.limit_sell_all, args=(self.limitPriceInput.text(),)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Limit Sell Executed")
+
+            else:
+
+                threading.Thread(target=TradeManager.limit_sell, args=(selection, self.limitPriceInput.text(),)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Limit Sell Executed On Account " + selection)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -331,40 +252,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
-            config = ConfigManager.get_config()
+            selection = str(self.marketOrderComboBox.currentText())
 
-            for x in config.tradeApis:
+            if selection == "All":
 
-                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
+                threading.Thread(target=TradeManager.close_all_positions).start()
+                
+                Util.show_info_dialog(self, "Order Info", "All Positions On All Accounts Closed")
 
-                cposition = client.positions()
+            else:
 
-                if len(cposition) >= 1:
+                threading.Thread(target=TradeManager.close_position, args=(selection,)).start()
 
-                    if cposition[0]['size'] > 0:
-                        client.sell(ConfigManager.get_config().tradeInsturment, abs(cposition[0]['size']), 0, "market")
-                    else:
-                        client.buy(ConfigManager.get_config().tradeInsturment, abs(cposition[0]['size']), 0, "market")
-
-                    time.sleep(0.5)
+                Util.show_info_dialog(self, "Order Info", "Position Closed on Account " + selection)
 
         except Exception as e:
-            error_dialog = QErrorMessage()
+            error_dialog = QErrorMessage(self)
             error_dialog.showMessage(str(e))
 
-    def do_close_orders(self):
-        config = ConfigManager.get_config()
 
-        for x in config.tradeApis:
+    def do_cancel_all_open_orders(self):
 
-            client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
-            client.cancelall()
+        try:
+            
+            threading.Thread(target=TradeManager.cancel_all_open_orders).start()
+
+            Util.show_info_dialog(self, "Order Info", "All Open Orders On All Accounts Cancelled")
+
+        except Exception as e:
+            error_dialog = QErrorMessage(self)
+            error_dialog.showMessage(str(e))
+
+    def do_cancel_orders(slef):
+
+        selection = str(self.marketOrderComboBox.currentText())
+
+        threading.Thread(target=TradeManager.close_open_orders, args=(selection,)).start()
+
+        Util.show_info_dialog(self, "Order Info", "All Open Orders On Account " + selection + " closed")
 
 def main():
     ConfigManager.get_config()
     app = QApplication(sys.argv)
     app.setStyle('fusion')
-
+    
     dark_palette = QDarkPalette()
 
     dark_palette.set_app(app)
