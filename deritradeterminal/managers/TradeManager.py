@@ -5,45 +5,45 @@ from deritradeterminal.managers.ConfigManager import ConfigManager
 class TradeManager:
 
     @staticmethod
-    def market_buy(exchangeid):
+    def market_buy(accountid):
 
         config = ConfigManager.get_config()
 
-        client = RestClient(config.tradeApis[exchangeid][0], config.tradeApis[exchangeid][1], ConfigManager.get_config().apiUrl)
-        client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[exchangeid][2], 0, "market")
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], 0, "market")
         
 
     @staticmethod
-    def market_sell(exchangeid):
+    def market_sell(accountid):
 
         config = ConfigManager.get_config()
 
-        client = RestClient(config.tradeApis[exchangeid][0], config.tradeApis[exchangeid][1], ConfigManager.get_config().apiUrl)
-        client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[exchangeid][2], 0, "market")
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], 0, "market")
 
     @staticmethod
-    def limit_buy(exchangeid, price):
+    def limit_buy(accountid, price):
 
         config = ConfigManager.get_config()
 
-        client = RestClient(config.tradeApis[exchangeid][0], config.tradeApis[exchangeid][1], ConfigManager.get_config().apiUrl)
-        client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[exchangeid][2], float(price), "limit")
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], float(price), "limit")
 
     @staticmethod
-    def limit_sell(exchangeid, price):
+    def limit_sell(accountid, price):
 
         config = ConfigManager.get_config()
 
-        client = RestClient(config.tradeApis[exchangeid][0], config.tradeApis[exchangeid][1], ConfigManager.get_config().apiUrl)
-        client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[exchangeid][2], float(price), "limit")
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], float(price), "limit")
 
 
     @staticmethod
-    def close_position(exchangeid):
+    def close_position(accountid):
 
         config = ConfigManager.get_config()
 
-        client = RestClient(config.tradeApis[exchangeid][0], config.tradeApis[exchangeid][1], ConfigManager.get_config().apiUrl)
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
 
         cposition = client.positions()
 
@@ -55,12 +55,19 @@ class TradeManager:
                 client.buy(ConfigManager.get_config().tradeInsturment, abs(cposition[0]['size']), 0, "market")
 
     @staticmethod
-    def close_open_orders(exchangeid):
+    def cancel_open_orders(accountid):
 
         config = ConfigManager.get_config()
 
-        client = RestClient(config.tradeApis[exchangeid][0], config.tradeApis[exchangeid][1], ConfigManager.get_config().apiUrl)
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
         client.cancelall()
+
+    @staticmethod
+    def cancel_open_order(accountid, orderid):
+        config = ConfigManager.get_config()
+
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.cancel(orderid)     
 
     @staticmethod
     def market_buy_all():
@@ -114,5 +121,5 @@ class TradeManager:
 
         for x in config.tradeApis:
 
-            TradeManager.close_open_orders(x)
+            TradeManager.cancel_open_orders(x)
 

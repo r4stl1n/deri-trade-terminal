@@ -35,7 +35,7 @@ class OrdersUpdateThread(QThread):
                     else:
                         direction = "Short"
 
-                    openOrders.append([x, direction, str(order["quantity"]), str(format(order["price"], '.2f'))])
+                    openOrders.append([x, direction, str(order["quantity"]), str(format(order["price"], '.2f')), order['orderId']])
 
         
         self.signeler.emit(openOrders)

@@ -161,7 +161,7 @@
      <item>
       <widget class="QTabWidget" name="orderTabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <property name="tabBarAutoHide">
         <bool>false</bool>
@@ -184,25 +184,6 @@
          </property>
          <property name="text">
           <string>Market Buy</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="closePositionButton">
-         <property name="geometry">
-          <rect>
-           <x>100</x>
-           <y>130</y>
-           <width>101</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>Close Positions</string>
          </property>
         </widget>
         <widget class="QPushButton" name="marketSellButton">
@@ -302,25 +283,6 @@
           <string>Limit Buy</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="closePositionButton2">
-         <property name="geometry">
-          <rect>
-           <x>100</x>
-           <y>130</y>
-           <width>101</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>Close Positions</string>
-         </property>
-        </widget>
         <widget class="QPushButton" name="limitSellButton">
          <property name="geometry">
           <rect>
@@ -406,7 +368,7 @@
    <property name="minimumSize">
     <size>
      <width>220</width>
-     <height>236</height>
+     <height>238</height>
     </size>
    </property>
    <property name="features">
@@ -423,9 +385,9 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
-       <widget class="QWidget" name="tab_2">
+       <widget class="QWidget" name="currentPositionsTab">
         <attribute name="title">
          <string>Open Positions</string>
         </attribute>
@@ -466,11 +428,41 @@
              <string>PNL</string>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string>Action</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="closePositionButton">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>147</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>147</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Close Positions</string>
+           </property>
           </widget>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="openOrdersTab">
         <attribute name="title">
          <string>Open Orders</string>
         </attribute>
@@ -500,12 +492,29 @@
              <string>Price</string>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string>Action</string>
+            </property>
+           </column>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="closeOrdersButton">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>147</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>147</height>
+            </size>
+           </property>
            <property name="styleSheet">
-            <string notr="true">background-color: teal</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Close Orders</string>
@@ -514,7 +523,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_4">
+       <widget class="QWidget" name="stopOrdersTab">
         <attribute name="title">
          <string>Stop Orders</string>
         </attribute>

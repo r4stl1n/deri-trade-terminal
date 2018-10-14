@@ -1,6 +1,7 @@
 import sys
 import threading
 
+from functools import partial
 from PyQt5 import QtWebEngineWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
@@ -22,6 +23,7 @@ from deritradeterminal.threads.OrdersUpdateThread import OrdersUpdateThread
 from deritradeterminal.threads.OrderBookUpdateThread import OrderBookUpdateThread
 from deritradeterminal.threads.PositionsUpdateThread import PositionsUpdateThread
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
 
     repeatedTask = None
@@ -40,7 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.marketOrderComboBox.addItem(x)
 
 
-        self.currentPositionsTable.setColumnCount(5)
+        self.currentPositionsTable.setColumnCount(6)
 
         index = 0
         for x in range(13):
@@ -48,7 +50,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             index = index + 1
 
         self.orderbookTable.setRowCount(25)
-        self.openOrderTable.setColumnCount(4)
+        self.openOrderTable.setColumnCount(5)
 
         self.positionsThread = PositionsUpdateThread()
         self.orderbookThread = OrderBookUpdateThread()
@@ -58,7 +60,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.orderbookThread.start()
         self.openOrderThread.start()
 
-        self.positionsThread.signeler.connect(self.update_table)
+        self.positionsThread.signeler.connect(self.update_positions)
         self.orderbookThread.signeler.connect(self.update_order_book)
         self.openOrderThread.signeler.connect(self.update_orders)
 
@@ -66,7 +68,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.marketSellButton.clicked.connect(self.do_market_sell_button)
 
         self.closePositionButton.clicked.connect(self.do_close_positions)
-        self.closePositionButton2.clicked.connect(self.do_close_positions)
 
         self.limitBuyButton.clicked.connect(self.do_limit_buy_button)
         self.limitSellButton.clicked.connect(self.do_limit_sell_button)
@@ -82,18 +83,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.placeHolderFrame.deleteLater()
 
 
-
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.firstRun()
+        self.orderButtonMap = {}
 
-    def update_table(self, index, account, insturment, size, averageprice, pnl):
-        self.currentPositionsTable.setItem(index,0,  QTableWidgetItem(account))
+    def update_positions(self, index, account, insturment, size, averageprice, pnl):
+        self.currentPositionsTable.setItem(index, 0,  QTableWidgetItem(account))
         self.currentPositionsTable.setItem(index, 1, QTableWidgetItem(insturment))
         self.currentPositionsTable.setItem(index, 2, QTableWidgetItem(size))
         self.currentPositionsTable.setItem(index, 3, QTableWidgetItem(averageprice))
         self.currentPositionsTable.setItem(index, 4, QTableWidgetItem(pnl))
+
+        orderButton = QPushButton(self.currentPositionsTable)
+        orderButton.setText("Close Position")
+        orderButton.clicked.connect(partial(self.do_close_position, account))
+        self.currentPositionsTable.setCellWidget(index, 5, orderButton)
+
         self.currentPositionsTable.update()
 
     def update_order_book(self, bids, asks, mark, indexprice):
@@ -129,6 +136,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             error_dialog = QErrorMessage()
             error_dialog.showMessage(str(e))
+            print(e)
 
     def update_orders(self, orders):
         try:
@@ -149,6 +157,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.openOrderTable.setItem(index, 1, QTableWidgetItem(str(order[1])))
                 self.openOrderTable.setItem(index, 2, QTableWidgetItem(str(order[2])))
                 self.openOrderTable.setItem(index, 3, QTableWidgetItem(str(order[3])))
+
+                orderButton = QPushButton(self.openOrderTable)
+                orderButton.setText("Cancel Order")
+                orderButton.clicked.connect(partial(self.do_cancel_order, [str(order[0]),str(order[4])]))
+                self.openOrderTable.setCellWidget(index, 4, orderButton)
+
                 index = index + 1
 
             self.openOrderTable.update()
@@ -156,6 +170,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             error_dialog = QErrorMessage()
             error_dialog.showMessage(str(e))
+            print(e)
 
     def do_market_buy_button(self):
 
@@ -248,6 +263,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             error_dialog.showMessage(str(e))
             print(e)
 
+    def do_close_position(self, accountid):
+
+        threading.Thread(target=TradeManager.close_position, args=(accountid,)).start()
+                
+        Util.show_info_dialog(self, "Order Info", "Position Closed On Account " + accountid)
+
+
     def do_close_positions(self):
 
         try:
@@ -269,6 +291,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             error_dialog = QErrorMessage(self)
             error_dialog.showMessage(str(e))
+            print(e)
 
 
     def do_cancel_all_open_orders(self):
@@ -282,14 +305,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             error_dialog = QErrorMessage(self)
             error_dialog.showMessage(str(e))
+            print(e)
 
-    def do_cancel_orders(slef):
+    def do_cancel_order(self, data):
 
-        selection = str(self.marketOrderComboBox.currentText())
+        threading.Thread(target=TradeManager.cancel_open_order, args=(data[0], data[1], )).start()
 
-        threading.Thread(target=TradeManager.close_open_orders, args=(selection,)).start()
-
-        Util.show_info_dialog(self, "Order Info", "All Open Orders On Account " + selection + " closed")
+        Util.show_info_dialog(self, "Order Info", "Order Cancelled")
 
 def main():
     ConfigManager.get_config()
