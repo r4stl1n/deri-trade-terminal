@@ -319,6 +319,7 @@ class Ui_MainWindow(object):
         self.recentTradesTable.setHorizontalHeaderItem(3, item)
         self.recentTradesTable.horizontalHeader().setDefaultSectionSize(70)
         self.recentTradesTable.horizontalHeader().setStretchLastSection(True)
+        self.recentTradesTable.verticalHeader().setVisible(False)
         self.horizontalLayout_9.addWidget(self.recentTradesTable)
         self.dockWidget.setWidget(self.dockWidgetContents)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget)
