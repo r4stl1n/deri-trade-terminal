@@ -23,6 +23,7 @@ from deritradeterminal.threads.OrdersUpdateThread import OrdersUpdateThread
 from deritradeterminal.threads.OrderBookUpdateThread import OrderBookUpdateThread
 from deritradeterminal.threads.PositionsUpdateThread import PositionsUpdateThread
 from deritradeterminal.threads.StopOrdersUpdateThread import StopOrdersUpdateThread
+from deritradeterminal.threads.AccountInfoUpdateThread import AccountInfoUpdateThread
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -35,7 +36,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         index = 0
 
         for x in config.tradeApis:
+            
             self.currentPositionsTable.insertRow(index)
+            self.accountInfoTable.insertRow(index)
+
             index = index + 1
 
             # Add options to the acction selection
@@ -53,21 +57,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.orderbookTable.setRowCount(25)
         self.openOrderTable.setColumnCount(5)
+        self.accountInfoTable.setColumnCount(6)
 
         self.positionsThread = PositionsUpdateThread()
         self.orderbookThread = OrderBookUpdateThread()
         self.openOrderThread = OrdersUpdateThread()
         self.stopOrderThread = StopOrdersUpdateThread()
+        self.accountInfoThread = AccountInfoUpdateThread()
         
         self.positionsThread.start()
         self.orderbookThread.start()
         self.openOrderThread.start()
         self.stopOrderThread.start()
+        self.accountInfoThread.start()
 
         self.positionsThread.signeler.connect(self.update_positions)
         self.orderbookThread.signeler.connect(self.update_order_book)
         self.openOrderThread.signeler.connect(self.update_orders)
         self.stopOrderThread.signeler.connect(self.update_stop_orders)
+        self.accountInfoThread.signeler.connect(self.update_account_info)
 
         self.marketBuyButton.clicked.connect(self.do_market_buy_button)
         self.marketSellButton.clicked.connect(self.do_market_sell_button)
@@ -208,6 +216,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 index = index + 1
 
             self.stopOrderTable.update()
+
+        except Exception as e:
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage(str(e))
+            print(e)
+
+    def update_account_info(self, accounts):
+        try:
+
+            index = 0
+
+            for account in accounts:
+                self.accountInfoTable.setItem(index, 0, QTableWidgetItem(str(account[0])))
+                self.accountInfoTable.setItem(index, 1, QTableWidgetItem(str(account[1])))
+                self.accountInfoTable.setItem(index, 2, QTableWidgetItem(str(account[2])))
+                self.accountInfoTable.setItem(index, 3, QTableWidgetItem(str(account[3])))
+                self.accountInfoTable.setItem(index, 4, QTableWidgetItem(str(account[4])))
+                self.accountInfoTable.setItem(index, 5, QTableWidgetItem(str(account[5])))
+
+                index = index + 1
+
+            self.accountInfoTable.update()
 
         except Exception as e:
             error_dialog = QErrorMessage()
