@@ -14,7 +14,6 @@ class OrderBookUpdateThread(QThread):
 
         config = ConfigManager.get_config()
 
-        index = 0
 
         if len(config.tradeApis) > 1:
             
@@ -28,7 +27,6 @@ class OrderBookUpdateThread(QThread):
 
             self.signeler.emit(orderbook['bids'], orderbook['asks'], str(format(orderbook['mark'], '.2f')), str(format(indexPrice, '.2f')))
 
-            index = index + 1
 
     def __init__(self):
         QThread.__init__(self)

@@ -24,6 +24,8 @@ from deritradeterminal.threads.OrderBookUpdateThread import OrderBookUpdateThrea
 from deritradeterminal.threads.PositionsUpdateThread import PositionsUpdateThread
 from deritradeterminal.threads.StopOrdersUpdateThread import StopOrdersUpdateThread
 from deritradeterminal.threads.AccountInfoUpdateThread import AccountInfoUpdateThread
+from deritradeterminal.threads.RecentTradesUpdateThread import RecentTradesUpdateThread
+
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -56,26 +58,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             index = index + 1
 
         self.orderbookTable.setRowCount(25)
+        self.recentTradesTable.setRowCount(25)
         self.openOrderTable.setColumnCount(5)
         self.accountInfoTable.setColumnCount(6)
+        self.recentTradesTable.setColumnCount(4)
 
         self.positionsThread = PositionsUpdateThread()
         self.orderbookThread = OrderBookUpdateThread()
         self.openOrderThread = OrdersUpdateThread()
         self.stopOrderThread = StopOrdersUpdateThread()
         self.accountInfoThread = AccountInfoUpdateThread()
+        self.recentTradesThread = RecentTradesUpdateThread()
         
         self.positionsThread.start()
         self.orderbookThread.start()
         self.openOrderThread.start()
         self.stopOrderThread.start()
         self.accountInfoThread.start()
+        self.recentTradesThread.start()
 
         self.positionsThread.signeler.connect(self.update_positions)
         self.orderbookThread.signeler.connect(self.update_order_book)
         self.openOrderThread.signeler.connect(self.update_orders)
         self.stopOrderThread.signeler.connect(self.update_stop_orders)
         self.accountInfoThread.signeler.connect(self.update_account_info)
+        self.recentTradesThread.signeler.connect(self.update_recent_trades)
 
         self.marketBuyButton.clicked.connect(self.do_market_buy_button)
         self.marketSellButton.clicked.connect(self.do_market_sell_button)
@@ -133,6 +140,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.orderbookTable.setItem(index, 1, QTableWidgetItem(str(ask['quantity'])))
                 self.orderbookTable.setItem(index, 2, QTableWidgetItem(str(ask['cm_amount'])))
 
+                self.orderbookTable.item(index, 0).setBackground(QtGui.QColor(213,0,0))
+                self.orderbookTable.item(index, 1).setBackground(QtGui.QColor(213,0,0))
+                self.orderbookTable.item(index, 2).setBackground(QtGui.QColor(213,0,0))
+
 
                 index = index + 1
 
@@ -145,6 +156,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.orderbookTable.setItem(index, 0, QTableWidgetItem(str(bid['price'])))
                 self.orderbookTable.setItem(index, 1, QTableWidgetItem(str(bid['quantity'])))
                 self.orderbookTable.setItem(index, 2, QTableWidgetItem(str(bid['cm_amount'])))
+
+                self.orderbookTable.item(index, 0).setBackground(QtGui.QColor(27,94,32))
+                self.orderbookTable.item(index, 1).setBackground(QtGui.QColor(27,94,32))
+                self.orderbookTable.item(index, 2).setBackground(QtGui.QColor(27,94,32))
 
                 index = index + 1
 
@@ -238,6 +253,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 index = index + 1
 
             self.accountInfoTable.update()
+
+        except Exception as e:
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage(str(e))
+            print(e)
+
+    def update_recent_trades(self, trades):
+        try:
+
+
+            index = 0
+
+            for trade in trades:
+                self.recentTradesTable.setItem(index, 0, QTableWidgetItem(str(trade[0])))
+                self.recentTradesTable.setItem(index, 1, QTableWidgetItem(str(trade[1])))
+                self.recentTradesTable.setItem(index, 2, QTableWidgetItem(str(trade[2])))
+                self.recentTradesTable.setItem(index, 3, QTableWidgetItem(str(trade[3])))
+
+                if trade[0] == "Long":
+                    if self.recentTradesTable.item(index, 0):
+                        self.recentTradesTable.item(index, 0).setBackground(QtGui.QColor(27,94,32))
+                else:
+                    if self.recentTradesTable.item(index, 0):
+                        self.recentTradesTable.item(index, 0).setBackground(QtGui.QColor(213,0,0))
+
+                index = index + 1
+
+            self.recentTradesTable.update()
 
         except Exception as e:
             error_dialog = QErrorMessage()
