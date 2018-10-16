@@ -22,6 +22,23 @@ class TradeManager:
         client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], 0, "market")
 
     @staticmethod
+    def stop_market_buy(accountid, price):
+
+        config = ConfigManager.get_config()
+
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.buy_stop_market_order(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], price)
+        
+
+    @staticmethod
+    def stop_market_sell(accountid, price):
+
+        config = ConfigManager.get_config()
+
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        client.sell_stop_market_order(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], price)
+
+    @staticmethod
     def limit_buy(accountid, price):
 
         config = ConfigManager.get_config()
@@ -63,6 +80,17 @@ class TradeManager:
         client.cancelall()
 
     @staticmethod
+    def cancel_open_stop_orders(accountid):
+
+        config = ConfigManager.get_config()
+
+        client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
+        orders = client.getopenorders(ordertype="stop_market")
+
+        for order in orders:
+            client.cancel(order['orderId'])
+
+    @staticmethod
     def cancel_open_order(accountid, orderid):
         config = ConfigManager.get_config()
 
@@ -86,6 +114,24 @@ class TradeManager:
         for x in config.tradeApis:
 
             TradeManager.market_sell(x)
+
+    @staticmethod
+    def stop_market_buy_all(price):
+        config = ConfigManager.get_config()
+
+        for x in config.tradeApis:
+
+            TradeManager.stop_market_buy(x, price)
+            
+
+    @staticmethod
+    def stop_market_sell_all(price):
+
+        config = ConfigManager.get_config()
+
+        for x in config.tradeApis:
+
+            TradeManager.stop_market_sell(x, price)
 
     @staticmethod
     def limit_buy_all(price):
@@ -122,4 +168,13 @@ class TradeManager:
         for x in config.tradeApis:
 
             TradeManager.cancel_open_orders(x)
+
+    @staticmethod
+    def cancel_all_open_stop_orders():
+
+        config = ConfigManager.get_config()
+
+        for x in config.tradeApis:
+
+            TradeManager.cancel_open_stop_orders(x)   
 

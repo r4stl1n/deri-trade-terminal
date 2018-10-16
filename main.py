@@ -22,6 +22,7 @@ from deritradeterminal.managers.ConfigManager import ConfigManager
 from deritradeterminal.threads.OrdersUpdateThread import OrdersUpdateThread
 from deritradeterminal.threads.OrderBookUpdateThread import OrderBookUpdateThread
 from deritradeterminal.threads.PositionsUpdateThread import PositionsUpdateThread
+from deritradeterminal.threads.StopOrdersUpdateThread import StopOrdersUpdateThread
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -40,6 +41,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Add options to the acction selection
             self.limitOrderComboBox.addItem(x)
             self.marketOrderComboBox.addItem(x)
+            self.stopOrderComboBox.addItem(x)
 
 
         self.currentPositionsTable.setColumnCount(6)
@@ -55,14 +57,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.positionsThread = PositionsUpdateThread()
         self.orderbookThread = OrderBookUpdateThread()
         self.openOrderThread = OrdersUpdateThread()
+        self.stopOrderThread = StopOrdersUpdateThread()
         
         self.positionsThread.start()
         self.orderbookThread.start()
         self.openOrderThread.start()
+        self.stopOrderThread.start()
 
         self.positionsThread.signeler.connect(self.update_positions)
         self.orderbookThread.signeler.connect(self.update_order_book)
         self.openOrderThread.signeler.connect(self.update_orders)
+        self.stopOrderThread.signeler.connect(self.update_stop_orders)
 
         self.marketBuyButton.clicked.connect(self.do_market_buy_button)
         self.marketSellButton.clicked.connect(self.do_market_sell_button)
@@ -73,6 +78,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.limitSellButton.clicked.connect(self.do_limit_sell_button)
 
         self.closeOrdersButton.clicked.connect(self.do_cancel_all_open_orders)
+        self.closeStopOrdersButton.clicked.connect(self.do_cancel_all_stop_orders)
+
+        self.stopMarketBuyButton.clicked.connect(self.do_stop_market_buy_button)
+        self.stopMarketSellButton.clicked.connect(self.do_stop_market_sell_button)
 
         self.webView = QtWebEngineWidgets.QWebEngineView(self)
         self.webView.setUrl(QtCore.QUrl("https://www.deribit.com/ftu_chart?instr=BTC-PERPETUAL"))
@@ -172,6 +181,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             error_dialog.showMessage(str(e))
             print(e)
 
+    def update_stop_orders(self, orders):
+        try:
+
+            index = 0
+
+            if len(orders) != self.stopOrderTable.rowCount:
+                self.stopOrderTable.setRowCount(0)
+
+                for x in range(len(orders)):
+                    self.stopOrderTable.insertRow(x)
+
+                self.stopOrderTable.setRowCount(len(orders))
+
+            for order in orders:
+                self.stopOrderTable.setItem(index, 0, QTableWidgetItem(str(order[0])))
+                self.stopOrderTable.setItem(index, 1, QTableWidgetItem(str(order[1])))
+                self.stopOrderTable.setItem(index, 2, QTableWidgetItem(str(order[2])))
+                self.stopOrderTable.setItem(index, 3, QTableWidgetItem(str(order[3])))
+
+                orderButton = QPushButton(self.stopOrderTable)
+                orderButton.setText("Cancel Order")
+                orderButton.clicked.connect(partial(self.do_cancel_order, [str(order[0]),str(order[4])]))
+                self.stopOrderTable.setCellWidget(index, 4, orderButton)
+
+                index = index + 1
+
+            self.stopOrderTable.update()
+
+        except Exception as e:
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage(str(e))
+            print(e)
+
     def do_market_buy_button(self):
 
         try:
@@ -211,6 +253,51 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 threading.Thread(target=TradeManager.market_sell, args=(selection,)).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Sell Executed On Account " + selection)
+
+        except Exception as e:
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage(str(e))
+            print(e)
+
+    def do_stop_market_buy_button(self):
+
+        try:
+
+            selection = str(self.stopOrderComboBox.currentText())
+
+            if selection == "All":
+
+                threading.Thread(target=TradeManager.stop_market_buy_all, args=(self.stopOrderPriceInput.text(),)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On All Accounts")
+
+            else:
+                threading.Thread(target=TradeManager.stop_market_buy, args=(selection, self.stopOrderPriceInput.text())).start()
+
+                Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On Account " + selection)
+
+
+        except Exception as e:
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage(str(e))
+            print(e)
+
+    def do_stop_market_sell_button(self):
+
+        try:
+
+            selection = str(self.stopOrderComboBox.currentText())
+
+            if selection == "All":
+
+                threading.Thread(target=TradeManager.stop_market_sell_all, args=(self.stopOrderPriceInput.text(),)).start()
+
+                Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On All Accounts")
+
+            else:
+                threading.Thread(target=TradeManager.stop_market_sell, args=(selection, self.stopOrderPriceInput.text(), )).start()
+
+                Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On Account " + selection)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -301,6 +388,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             threading.Thread(target=TradeManager.cancel_all_open_orders).start()
 
             Util.show_info_dialog(self, "Order Info", "All Open Orders On All Accounts Cancelled")
+
+        except Exception as e:
+            error_dialog = QErrorMessage(self)
+            error_dialog.showMessage(str(e))
+            print(e)
+
+    def do_cancel_all_stop_orders(self):
+
+        try:
+            
+            threading.Thread(target=TradeManager.cancel_all_open_stop_orders).start()
+
+            Util.show_info_dialog(self, "Order Info", "All Stop Orders On All Accounts Cancelled")
 
         except Exception as e:
             error_dialog = QErrorMessage(self)

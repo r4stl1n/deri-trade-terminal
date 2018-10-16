@@ -139,8 +139,6 @@ class RestClient(object):
             "type": ordertype
         }
 
-
-
         if label:
             options["label"] = label
         if postOnly:
@@ -148,6 +146,31 @@ class RestClient(object):
 
         return self.request("/api/v1/private/sell", options)
 
+    def buy_stop_market_order(self, instrument, quantity, price):
+        options = {
+            "instrument": instrument,
+            "quantity": quantity,
+            "stopPx": price,
+            "type": "stop_market",
+            "execInst": "index_price",
+            "time_in_force": "good_till_cancel",
+
+        }
+
+        return self.request("/api/v1/private/buy", options)
+
+
+    def sell_stop_market_order(self, instrument, quantity, price):
+        options = {
+            "instrument": instrument,
+            "quantity": quantity,
+            "stopPx": price,
+            "type": "stop_market",
+            "execInst": "index_price",
+            "time_in_force": "good_till_cancel",
+        }
+
+        return self.request("/api/v1/private/sell", options)
 
     def cancel(self, orderId):
         options = {
@@ -171,13 +194,17 @@ class RestClient(object):
         return self.request("/api/v1/private/edit", options)
 
 
-    def getopenorders(self, instrument=None, orderId=None):
+    def getopenorders(self, ordertype=None, instrument=None, orderid=None):
         options = {}
 
         if instrument:
             options["instrument"] = instrument 
-        if orderId:
-            options["orderId"] = orderId
+
+        if orderid:
+            options["orderId"] = orderid
+
+        if ordertype:
+            options["type"] = ordertype
 
         return self.request("/api/v1/private/getopenorders", options)
 
