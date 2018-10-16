@@ -11,33 +11,40 @@ class PositionsUpdateThread(QThread):
     signeler = pyqtSignal(int,str,str,str,str,str) 
 
     def collectProcessData(self):
-        config = ConfigManager.get_config()
 
-        index = 0
+        try:
+            
+            config = ConfigManager.get_config()
 
-        for x in config.tradeApis:
+            index = 0
 
-            client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
+            for x in config.tradeApis:
 
-            cposition = client.positions()
+                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
 
-            if len(cposition) >= 1:
+                cposition = client.positions()
 
-                position = cposition[0]
+                if len(cposition) >= 1:
 
-                direction = ""
-                
-                if position['direction'] == "buy":
-                    direction = "Long"
+                    position = cposition[0]
+
+                    direction = ""
+                    
+                    if position['direction'] == "buy":
+                        direction = "Long"
+                    else:
+                        direction = "Short"
+
+                    self.signeler.emit(index, x, direction, str(position["size"]), str(format(position["averagePrice"], '.4f')), str(format(position["profitLoss"], '.8f')))
+
                 else:
-                    direction = "Short"
+                    self.signeler.emit(index, x, "No Position", "", "", "")
 
-                self.signeler.emit(index, x, direction, str(position["size"]), str(format(position["averagePrice"], '.4f')), str(format(position["profitLoss"], '.8f')))
+                index = index + 1
 
-            else:
-                self.signeler.emit(index, x, "No Position", "", "", "")
+        except Exception as e:
+            print(e)
 
-            index = index + 1
 
     def __init__(self):
         QThread.__init__(self)

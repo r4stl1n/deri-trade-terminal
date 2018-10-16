@@ -12,20 +12,25 @@ class AccountInfoUpdateThread(QThread):
 
     def collectProcessData(self):
 
-        config = ConfigManager.get_config()
+        try:
+            
+            config = ConfigManager.get_config()
 
-        toreturn = []
+            toreturn = []
 
-        for x in config.tradeApis:
+            for x in config.tradeApis:
 
-            client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
+                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
 
-            accountinfo = client.account()
+                accountinfo = client.account()
 
-            toreturn.append([x, str(format(accountinfo["equity"], '.8f')), str(format(accountinfo["balance"], '.8f')), 
-                str(format(accountinfo["availableFunds"], '.8f')), str(format(accountinfo["initialMargin"], '.8f')), str(format(accountinfo["maintenanceMargin"], '.8f'))])
+                toreturn.append([x, str(format(accountinfo["equity"], '.8f')), str(format(accountinfo["balance"], '.8f')), 
+                    str(format(accountinfo["availableFunds"], '.8f')), str(format(accountinfo["initialMargin"], '.8f')), str(format(accountinfo["maintenanceMargin"], '.8f'))])
 
-        self.signeler.emit(toreturn)
+            self.signeler.emit(toreturn)
+
+        except Exception as e:
+            print(e)
 
     def __init__(self):
         QThread.__init__(self)

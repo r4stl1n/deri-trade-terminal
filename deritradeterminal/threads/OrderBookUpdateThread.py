@@ -12,21 +12,24 @@ class OrderBookUpdateThread(QThread):
 
     def collectProcessData(self):
 
-        config = ConfigManager.get_config()
-
-
-        if len(config.tradeApis) > 1:
+        try:
             
-            creds = list(config.tradeApis.values())[0]
+            config = ConfigManager.get_config()
 
-            client = RestClient(creds[0], creds[1], ConfigManager.get_config().apiUrl)
+            if len(config.tradeApis) > 1:
+                
+                creds = list(config.tradeApis.values())[0]
 
-            orderbook = client.getorderbook(ConfigManager.get_config().tradeInsturment) 
+                client = RestClient(creds[0], creds[1], ConfigManager.get_config().apiUrl)
 
-            indexPrice = client.index()['btc']
+                orderbook = client.getorderbook(ConfigManager.get_config().tradeInsturment) 
 
-            self.signeler.emit(orderbook['bids'], orderbook['asks'], str(format(orderbook['mark'], '.2f')), str(format(indexPrice, '.2f')))
+                indexPrice = client.index()['btc']
 
+                self.signeler.emit(orderbook['bids'], orderbook['asks'], str(format(orderbook['mark'], '.2f')), str(format(indexPrice, '.2f')))
+
+        except Exception as e:
+            print(e)
 
     def __init__(self):
         QThread.__init__(self)

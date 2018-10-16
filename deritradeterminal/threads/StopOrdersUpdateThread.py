@@ -14,31 +14,36 @@ class StopOrdersUpdateThread(QThread):
 
     def collectProcessData(self):
 
-        config = ConfigManager.get_config()
+        try:
 
-        openOrders = []
+            config = ConfigManager.get_config()
 
-        for x in config.tradeApis:
+            openOrders = []
 
-            client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
+            for x in config.tradeApis:
 
-            orders = client.getopenorders(ordertype="stop_market")
+                client = RestClient(config.tradeApis[x][0], config.tradeApis[x][1], ConfigManager.get_config().apiUrl)
 
-            if len(orders) >= 1:
+                orders = client.getopenorders(ordertype="stop_market")
 
-                for order in orders:
+                if len(orders) >= 1:
 
-                    direction = ""
-                    
-                    if order['direction'] == "buy":
-                        direction = "Long"
-                    else:
-                        direction = "Short"
+                    for order in orders:
 
-                    openOrders.append([x, direction, str(order["quantity"]), str(format(order["stopPx"], '.2f')), order['orderId']])
+                        direction = ""
+                        
+                        if order['direction'] == "buy":
+                            direction = "Long"
+                        else:
+                            direction = "Short"
 
-        
-        self.signeler.emit(openOrders)
+                        openOrders.append([x, direction, str(order["quantity"]), str(format(order["stopPx"], '.2f')), order['orderId']])
+
+            
+            self.signeler.emit(openOrders)
+            
+        except Exception as e:
+            print(e)
 
     def __init__(self):
         QThread.__init__(self)
