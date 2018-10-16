@@ -81,6 +81,5 @@ ______          _ _____ _          _ _
        msg.move(p)
       
        retval = msg.exec_()
-       print "value of pressed message box button:", retval
 
 
