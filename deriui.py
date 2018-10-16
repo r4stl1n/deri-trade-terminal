@@ -267,6 +267,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.accountInfoTab)
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.accountInfoTable = QtWidgets.QTableWidget(self.accountInfoTab)
+        self.accountInfoTable.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.accountInfoTable.setObjectName("accountInfoTable")
         self.accountInfoTable.setColumnCount(6)
         self.accountInfoTable.setRowCount(0)
@@ -302,8 +303,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuView.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.orderTabWidget.setCurrentIndex(2)
-        self.tabWidget.setCurrentIndex(3)
+        self.orderTabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

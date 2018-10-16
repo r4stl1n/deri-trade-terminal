@@ -161,7 +161,7 @@
      <item>
       <widget class="QTabWidget" name="orderTabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="tabBarAutoHide">
         <bool>false</bool>
@@ -477,7 +477,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="currentPositionsTab">
         <attribute name="title">
@@ -707,6 +707,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_8">
          <item>
           <widget class="QTableWidget" name="accountInfoTable">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::NoSelection</enum>
+           </property>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>false</bool>
            </attribute>
