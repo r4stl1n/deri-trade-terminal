@@ -82,4 +82,16 @@ ______          _ _____ _          _ _
       
        retval = msg.exec_()
 
+    @staticmethod
+    def show_error_dialog(parent, title, text):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+
+        msg.setText(text)
+        msg.setWindowTitle(title)
+        p = parent.frameGeometry().center() - QtCore.QRect(QtCore.QPoint(), msg.sizeHint()).center()
+        msg.move(p)
+
+        retval = msg.exec_()
+
 

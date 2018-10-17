@@ -301,12 +301,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.market_buy_all).start()
+                threading.Thread(target=TradeManager.market_buy_all, args=(self, )).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Buy Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.market_buy, args=(selection, self.marketAmountInput.text())).start()
+                threading.Thread(target=TradeManager.market_buy, args=(self, selection, self.marketAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Buy Executed On Account " + selection)
 
@@ -324,12 +324,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.market_sell_all).start()
+                threading.Thread(target=TradeManager.market_sell_all, args=(self, )).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Sell Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.market_sell, args=(selection, self.marketAmountInput.text())).start()
+                threading.Thread(target=TradeManager.market_sell, args=(self, selection, self.marketAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Sell Executed On Account " + selection)
 
@@ -346,12 +346,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.stop_market_buy_all, args=(self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
+                threading.Thread(target=TradeManager.stop_market_buy_all, args=(self, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.stop_market_buy, args=(selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
+                threading.Thread(target=TradeManager.stop_market_buy, args=(self, selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On Account " + selection)
 
@@ -369,12 +369,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.stop_market_sell_all, args=(self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
+                threading.Thread(target=TradeManager.stop_market_sell_all, args=(self, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.stop_market_sell, args=(selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
+                threading.Thread(target=TradeManager.stop_market_sell, args=(self, selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On Account " + selection)
 
@@ -391,13 +391,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
                 
-                threading.Thread(target=TradeManager.limit_buy_all, args=(self.limitPriceInput.text(), self.limitAmountInput.text())).start()
+                threading.Thread(target=TradeManager.limit_buy_all, args=(self, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
                 
                 Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On All Accounts")
 
             else:
                 
-                threading.Thread(target=TradeManager.limit_buy, args=(selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
+                threading.Thread(target=TradeManager.limit_buy, args=(self, selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On Account " + selection)
 
@@ -414,13 +414,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.limit_sell_all, args=(self.limitPriceInput.text(), self.limitAmountInput.text())).start()
+                threading.Thread(target=TradeManager.limit_sell_all, args=(self, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Limit Sell Executed")
 
             else:
 
-                threading.Thread(target=TradeManager.limit_sell, args=(selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
+                threading.Thread(target=TradeManager.limit_sell, args=(self, selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Limit Sell Executed On Account " + selection)
 
@@ -431,7 +431,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def do_close_position(self, accountid):
 
-        threading.Thread(target=TradeManager.close_position, args=(accountid,)).start()
+        threading.Thread(target=TradeManager.close_position, args=(self, accountid,)).start()
                 
         Util.show_info_dialog(self, "Order Info", "Position Closed On Account " + accountid)
 
@@ -444,7 +444,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.close_all_positions).start()
+                threading.Thread(target=TradeManager.close_all_positions, args=(self, )).start()
                 
                 Util.show_info_dialog(self, "Order Info", "All Positions On All Accounts Closed")
 
@@ -464,7 +464,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
             
-            threading.Thread(target=TradeManager.cancel_all_open_orders).start()
+            threading.Thread(target=TradeManager.cancel_all_open_orders, args=(self, )).start()
 
             Util.show_info_dialog(self, "Order Info", "All Open Orders On All Accounts Cancelled")
 
@@ -477,7 +477,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
             
-            threading.Thread(target=TradeManager.cancel_all_open_stop_orders).start()
+            threading.Thread(target=TradeManager.cancel_all_open_stop_orders, args=(self, )).start()
 
             Util.show_info_dialog(self, "Order Info", "All Stop Orders On All Accounts Cancelled")
 
@@ -488,7 +488,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def do_cancel_order(self, data):
 
-        threading.Thread(target=TradeManager.cancel_open_order, args=(data[0], data[1], )).start()
+        threading.Thread(target=TradeManager.cancel_open_order, args=(self, data[0], data[1], )).start()
 
         Util.show_info_dialog(self, "Order Info", "Order Cancelled")
 
