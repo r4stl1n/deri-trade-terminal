@@ -16,7 +16,7 @@ class OrderBookUpdateThread(QThread):
             
             config = ConfigManager.get_config()
 
-            if len(config.tradeApis) > 1:
+            if len(config.tradeApis) >= 1:
                 
                 creds = list(config.tradeApis.values())[0]
 

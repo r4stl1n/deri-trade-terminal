@@ -213,7 +213,7 @@
           <rect>
            <x>10</x>
            <y>60</y>
-           <width>281</width>
+           <width>131</width>
            <height>61</height>
           </rect>
          </property>
@@ -228,7 +228,7 @@
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>261</width>
+            <width>111</width>
             <height>20</height>
            </rect>
           </property>
@@ -263,6 +263,35 @@
             <string>All</string>
            </property>
           </item>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>60</y>
+           <width>131</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Amount</string>
+         </property>
+         <widget class="QLineEdit" name="marketAmountInput">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </widget>
         </widget>
        </widget>
@@ -310,7 +339,7 @@
           <rect>
            <x>10</x>
            <y>60</y>
-           <width>281</width>
+           <width>131</width>
            <height>61</height>
           </rect>
          </property>
@@ -322,7 +351,7 @@
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>261</width>
+            <width>111</width>
             <height>20</height>
            </rect>
           </property>
@@ -354,6 +383,35 @@
             <string>All</string>
            </property>
           </item>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_8">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>60</y>
+           <width>131</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Amount</string>
+         </property>
+         <widget class="QLineEdit" name="limitAmountInput">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </widget>
         </widget>
        </widget>
@@ -410,7 +468,7 @@
           <rect>
            <x>10</x>
            <y>60</y>
-           <width>281</width>
+           <width>131</width>
            <height>61</height>
           </rect>
          </property>
@@ -425,7 +483,7 @@
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>261</width>
+            <width>111</width>
             <height>20</height>
            </rect>
           </property>
@@ -452,6 +510,35 @@
          <property name="text">
           <string>Stop Sell</string>
          </property>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>60</y>
+           <width>131</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Amount</string>
+         </property>
+         <widget class="QLineEdit" name="stopOrderAmountInput">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
         </widget>
        </widget>
       </widget>

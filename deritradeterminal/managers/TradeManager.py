@@ -5,54 +5,54 @@ from deritradeterminal.managers.ConfigManager import ConfigManager
 class TradeManager:
 
     @staticmethod
-    def market_buy(accountid):
+    def market_buy(accountid, amount):
 
         config = ConfigManager.get_config()
 
         client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
-        client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], 0, "market")
+        client.buy(ConfigManager.get_config().tradeInsturment, float(amount), 0, "market")
         
 
     @staticmethod
-    def market_sell(accountid):
+    def market_sell(accountid, amount):
 
         config = ConfigManager.get_config()
 
         client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
-        client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], 0, "market")
+        client.sell(ConfigManager.get_config().tradeInsturment, float(amount), 0, "market")
 
     @staticmethod
-    def stop_market_buy(accountid, price):
+    def stop_market_buy(accountid, price, amount):
 
         config = ConfigManager.get_config()
 
         client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
-        client.buy_stop_market_order(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], price)
+        client.buy_stop_market_order(ConfigManager.get_config().tradeInsturment, float(amount), price)
         
 
     @staticmethod
-    def stop_market_sell(accountid, price):
+    def stop_market_sell(accountid, price, amount):
 
         config = ConfigManager.get_config()
 
         client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
-        client.sell_stop_market_order(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], price)
+        client.sell_stop_market_order(ConfigManager.get_config().tradeInsturment, float(amount), price)
 
     @staticmethod
-    def limit_buy(accountid, price):
+    def limit_buy(accountid, price, amount):
 
         config = ConfigManager.get_config()
 
         client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
-        client.buy(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], float(price), "limit")
+        client.buy(ConfigManager.get_config().tradeInsturment, float(amount), float(price), "limit")
 
     @staticmethod
-    def limit_sell(accountid, price):
+    def limit_sell(accountid, price, amount):
 
         config = ConfigManager.get_config()
 
         client = RestClient(config.tradeApis[accountid][0], config.tradeApis[accountid][1], ConfigManager.get_config().apiUrl)
-        client.sell(ConfigManager.get_config().tradeInsturment, config.tradeApis[accountid][2], float(price), "limit")
+        client.sell(ConfigManager.get_config().tradeInsturment, float(amount), float(price), "limit")
 
 
     @staticmethod
@@ -103,7 +103,7 @@ class TradeManager:
 
         for x in config.tradeApis:
 
-            TradeManager.market_buy(x)
+            TradeManager.market_buy(x, amount)
             
 
     @staticmethod
@@ -113,7 +113,7 @@ class TradeManager:
 
         for x in config.tradeApis:
 
-            TradeManager.market_sell(x)
+            TradeManager.market_sell(x, amount)
 
     @staticmethod
     def stop_market_buy_all(price):
@@ -121,7 +121,7 @@ class TradeManager:
 
         for x in config.tradeApis:
 
-            TradeManager.stop_market_buy(x, price)
+            TradeManager.stop_market_buy(x, price, amount)
             
 
     @staticmethod
@@ -131,7 +131,7 @@ class TradeManager:
 
         for x in config.tradeApis:
 
-            TradeManager.stop_market_sell(x, price)
+            TradeManager.stop_market_sell(x, price, amount)
 
     @staticmethod
     def limit_buy_all(price):
@@ -140,16 +140,16 @@ class TradeManager:
 
         for x in config.tradeApis:
 
-            TradeManager.limit_buy(x, price)
+            TradeManager.limit_buy(x, price, amount)
 
     @staticmethod
-    def limit_sell_all(price):
+    def limit_sell_all(price, amount):
 
         config = ConfigManager.get_config()
 
         for x in config.tradeApis:
 
-            TradeManager.limit_sell(x, price)
+            TradeManager.limit_sell(x, price, amount)
 
     @staticmethod
     def close_all_positions():

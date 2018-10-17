@@ -2,15 +2,15 @@ import sys
 import threading
 
 from functools import partial
-from PyQt5 import QtWebEngineWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+
 
 from deriui import Ui_MainWindow
 
 from PyQt5 import *
-from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5 import QtWebEngineWidgets
 
 from deritradeterminal.util.Util import Util
 
@@ -97,6 +97,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.stopMarketBuyButton.clicked.connect(self.do_stop_market_buy_button)
         self.stopMarketSellButton.clicked.connect(self.do_stop_market_sell_button)
+
+        self.marketAmountInput.setValidator(QDoubleValidator())
+        self.limitPriceInput.setValidator(QDoubleValidator())
+        self.limitAmountInput.setValidator(QDoubleValidator())
+        self.stopOrderAmountInput.setValidator(QDoubleValidator())
+        self.stopOrderPriceInput.setValidator(QDoubleValidator())
 
         self.webView = QtWebEngineWidgets.QWebEngineView(self)
         self.webView.setUrl(QtCore.QUrl("https://www.deribit.com/ftu_chart?instr=BTC-PERPETUAL"))
@@ -300,7 +306,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 Util.show_info_dialog(self, "Order Info", "Market Buy Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.market_buy, args=(selection,)).start()
+                threading.Thread(target=TradeManager.market_buy, args=(selection, self.marketAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Buy Executed On Account " + selection)
 
@@ -323,7 +329,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 Util.show_info_dialog(self, "Order Info", "Market Sell Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.market_sell, args=(selection,)).start()
+                threading.Thread(target=TradeManager.market_sell, args=(selection, self.marketAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Sell Executed On Account " + selection)
 
@@ -340,12 +346,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.stop_market_buy_all, args=(self.stopOrderPriceInput.text(),)).start()
+                threading.Thread(target=TradeManager.stop_market_buy_all, args=(self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.stop_market_buy, args=(selection, self.stopOrderPriceInput.text())).start()
+                threading.Thread(target=TradeManager.stop_market_buy, args=(selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On Account " + selection)
 
@@ -363,12 +369,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.stop_market_sell_all, args=(self.stopOrderPriceInput.text(),)).start()
+                threading.Thread(target=TradeManager.stop_market_sell_all, args=(self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On All Accounts")
 
             else:
-                threading.Thread(target=TradeManager.stop_market_sell, args=(selection, self.stopOrderPriceInput.text(), )).start()
+                threading.Thread(target=TradeManager.stop_market_sell, args=(selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On Account " + selection)
 
@@ -385,13 +391,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
                 
-                threading.Thread(target=TradeManager.limit_buy_all, args=(self.limitPriceInput.text(),)).start()
+                threading.Thread(target=TradeManager.limit_buy_all, args=(self.limitPriceInput.text(), self.limitAmountInput.text())).start()
                 
                 Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On All Accounts")
 
             else:
                 
-                threading.Thread(target=TradeManager.limit_buy, args=(selection, self.limitPriceInput.text(),)).start()
+                threading.Thread(target=TradeManager.limit_buy, args=(selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On Account " + selection)
 
@@ -408,13 +414,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.limit_sell_all, args=(self.limitPriceInput.text(),)).start()
+                threading.Thread(target=TradeManager.limit_sell_all, args=(self.limitPriceInput.text(), self.limitAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Limit Sell Executed")
 
             else:
 
-                threading.Thread(target=TradeManager.limit_sell, args=(selection, self.limitPriceInput.text(),)).start()
+                threading.Thread(target=TradeManager.limit_sell, args=(selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Limit Sell Executed On Account " + selection)
 
