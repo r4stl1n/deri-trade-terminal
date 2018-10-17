@@ -137,7 +137,7 @@ class TradeManager:
             Util.show_error_dialog(parent, "Cancel Open Order Error" , "Failed to cancel open order id: "+ str(orderid)+" on " + str(accountid) + "\n" + str(e))
 
     @staticmethod
-    def market_buy_all(parent):
+    def market_buy_all(parent, amount):
         config = ConfigManager.get_config()
 
         for x in config.tradeApis:
@@ -155,7 +155,7 @@ class TradeManager:
             TradeManager.market_sell(parent, x, amount)
 
     @staticmethod
-    def stop_market_buy_all(parent, price):
+    def stop_market_buy_all(parent, price, amount):
         config = ConfigManager.get_config()
 
         for x in config.tradeApis:
@@ -164,7 +164,7 @@ class TradeManager:
             
 
     @staticmethod
-    def stop_market_sell_all(parent, price):
+    def stop_market_sell_all(parent, price, amount):
 
         config = ConfigManager.get_config()
 
@@ -173,7 +173,7 @@ class TradeManager:
             TradeManager.stop_market_sell(parent, x, price, amount)
 
     @staticmethod
-    def limit_buy_all(parent, price):
+    def limit_buy_all(parent, price, amount):
 
         config = ConfigManager.get_config()
 
