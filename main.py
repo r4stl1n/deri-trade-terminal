@@ -67,7 +67,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.orderbookTable.setRowCount(25)
         self.recentTradesTable.setRowCount(25)
         self.openOrderTable.setColumnCount(5)
-        self.accountInfoTable.setColumnCount(6)
+        self.accountInfoTable.setColumnCount(8)
         self.recentTradesTable.setColumnCount(4)
 
         self.positionsThread = PositionsUpdateThread()
@@ -314,6 +314,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.accountInfoTable.setItem(index, 3, QTableWidgetItem(str(account[3])))
                 self.accountInfoTable.setItem(index, 4, QTableWidgetItem(str(account[4])))
                 self.accountInfoTable.setItem(index, 5, QTableWidgetItem(str(account[5])))
+                self.accountInfoTable.setItem(index, 6, QTableWidgetItem(str(account[6])))
+                self.accountInfoTable.setItem(index, 7, QTableWidgetItem(str(account[7])))
 
                 self.accountInfoTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
                 self.accountInfoTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
@@ -321,6 +323,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.accountInfoTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
                 self.accountInfoTable.item(index, 4).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
                 self.accountInfoTable.item(index, 5).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 6).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 7).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+
+                if float(account[7]) == 0:
+                    pass
+                elif float(account[7]) < 40:
+                    self.accountInfoTable.item(index, 7).setBackground(QtGui.QColor(27,94,32))
+                elif float(account[7]) > 40 and float(account[7]) < 80:
+                    self.accountInfoTable.item(index, 7).setBackground(QtGui.QColor(255,214,0))
+                elif float(account[7]) > 80 and float(account[7]) < 90:
+                    self.accountInfoTable.item(index, 7).setBackground(QtGui.QColor(255,109,0))
+                else:
+                    self.accountInfoTable.item(index, 7).setBackground(QtGui.QColor(213,0,0))
+
+
 
                 index = index + 1
 

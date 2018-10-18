@@ -567,7 +567,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="currentPositionsTab">
         <attribute name="title">
@@ -814,7 +814,7 @@
             <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>130</number>
+            <number>115</number>
            </attribute>
            <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
             <bool>false</bool>
@@ -852,7 +852,17 @@
            </column>
            <column>
             <property name="text">
-             <string>Maintenance Margin</string>
+             <string>Initial Margin %</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Maint Margin</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Maint Margin %</string>
             </property>
            </column>
           </widget>

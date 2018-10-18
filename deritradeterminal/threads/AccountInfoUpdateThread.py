@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
+from deritradeterminal.util.Util import Util
 from deritradeterminal.util.deribit_api import RestClient
 from deritradeterminal.managers.ConfigManager import ConfigManager
 
@@ -25,7 +26,9 @@ class AccountInfoUpdateThread(QThread):
                 accountinfo = client.account()
 
                 toreturn.append([x, str(format(accountinfo["equity"], '.8f')), str(format(accountinfo["balance"], '.8f')), 
-                    str(format(accountinfo["availableFunds"], '.8f')), str(format(accountinfo["initialMargin"], '.8f')), str(format(accountinfo["maintenanceMargin"], '.8f'))])
+                    str(format(accountinfo["availableFunds"], '.8f')), str(format(accountinfo["initialMargin"], '.8f')), 
+                    str(format(Util.percentageOf(accountinfo["initialMargin"],accountinfo["equity"]), '.2f')), str(format(accountinfo["maintenanceMargin"], '.8f')),
+                    str(format(Util.percentageOf(accountinfo["maintenanceMargin"],accountinfo["equity"]), '.2f'))])
 
             self.signeler.emit(toreturn)
 
