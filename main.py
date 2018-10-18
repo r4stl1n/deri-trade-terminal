@@ -141,9 +141,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if pnl:
             if float(str(pnl)) > 0:
                 self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(27,94,32))
-
-            if float(str(pnl)) < 0:
+            elif float(str(pnl)) < 0:
                 self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(213,0,0))
+            else:
+                self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(26,35,126))
 
         orderButton = QPushButton(self.currentPositionsTable)
         orderButton.setText("Close Position")
