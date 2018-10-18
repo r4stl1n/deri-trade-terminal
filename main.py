@@ -13,7 +13,6 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtWebEngineWidgets
 
 from deritradeterminal.util.Util import Util
-
 from deritradeterminal.util.QDarkPalette import QDarkPalette
 
 from deritradeterminal.managers.TradeManager import TradeManager
@@ -26,12 +25,23 @@ from deritradeterminal.threads.StopOrdersUpdateThread import StopOrdersUpdateThr
 from deritradeterminal.threads.AccountInfoUpdateThread import AccountInfoUpdateThread
 from deritradeterminal.threads.RecentTradesUpdateThread import RecentTradesUpdateThread
 
+from deritradeterminal.threads.orders.LimitBuyThread import LimitBuyThread
+from deritradeterminal.threads.orders.LimitSellThread import LimitSellThread
+from deritradeterminal.threads.orders.MarketBuyThread import MarketBuyThread
+from deritradeterminal.threads.orders.MarketSellThread import MarketSellThread
+from deritradeterminal.threads.orders.ClosePositionThread import ClosePositionThread
+from deritradeterminal.threads.orders.StopMarketBuyThread import StopMarketBuyThread
+from deritradeterminal.threads.orders.StopMarketSellThread import StopMarketSellThread
+from deritradeterminal.threads.orders.CancelOpenOrderThread import CancelOpenOrderThread
+from deritradeterminal.threads.orders.CancelOpenOrdersThread import CancelOpenOrdersThread
+from deritradeterminal.threads.orders.CancelOpenStopOrdersThread import CancelOpenStopOrdersThread
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
     repeatedTask = None
     positionsThread = None
+
 
     def firstRun(self):
         config = ConfigManager.get_config()
@@ -118,6 +128,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.firstRun()
         self.orderButtonMap = {}
+        self.runningThreads = []
 
     def update_positions(self, index, account, insturment, size, averageprice, pnl):
         self.currentPositionsTable.setItem(index, 0,  QTableWidgetItem(account))
@@ -296,20 +307,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def do_market_buy_button(self):
 
         try:
+            
+            config = ConfigManager.get_config()
 
             selection = str(self.marketOrderComboBox.currentText())
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.market_buy_all, args=(self, self.marketAmountInput.text())).start()
+                for x in config.tradeApis:
 
-                Util.show_info_dialog(self, "Order Info", "Market Buy Executed On All Accounts")
+                    thread = MarketBuyThread(x, float(self.marketAmountInput.text()))
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
 
             else:
-                threading.Thread(target=TradeManager.market_buy, args=(self, selection, self.marketAmountInput.text())).start()
 
-                Util.show_info_dialog(self, "Order Info", "Market Buy Executed On Account " + selection)
-
+                thread = MarketBuyThread(selection, float(self.marketAmountInput.text()))
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -320,18 +337,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
+            config = ConfigManager.get_config()
+
             selection = str(self.marketOrderComboBox.currentText())
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.market_sell_all, args=(self, self.marketAmountInput.text())).start()
+                for x in config.tradeApis:
 
-                Util.show_info_dialog(self, "Order Info", "Market Sell Executed On All Accounts")
+                    thread = MarketSellThread(x, float(self.marketAmountInput.text()))
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
 
             else:
-                threading.Thread(target=TradeManager.market_sell, args=(self, selection, self.marketAmountInput.text())).start()
 
-                Util.show_info_dialog(self, "Order Info", "Market Sell Executed On Account " + selection)
+                thread = MarketSellThread(selection, float(self.marketAmountInput.text()))
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -342,19 +366,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
+            config = ConfigManager.get_config()
+
             selection = str(self.stopOrderComboBox.currentText())
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.stop_market_buy_all, args=(self, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
+                for x in config.tradeApis:
 
-                Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On All Accounts")
+                    thread = StopMarketBuyThread(x, float(self.stopOrderPriceInput.text()), float(self.stopOrderAmountInput.text()))
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
 
             else:
-                threading.Thread(target=TradeManager.stop_market_buy, args=(self, selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
-                Util.show_info_dialog(self, "Order Info", "Stop Market Buy Executed On Account " + selection)
-
+                thread = StopMarketBuyThread(selection, float(self.stopOrderPriceInput.text()), float(self.stopOrderAmountInput.text()))
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -365,19 +395,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
+            config = ConfigManager.get_config()
+
             selection = str(self.stopOrderComboBox.currentText())
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.stop_market_sell_all, args=(self, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
+                for x in config.tradeApis:
 
-                Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On All Accounts")
+                    thread = StopMarketSellThread(x, float(self.stopOrderPriceInput.text()), float(self.stopOrderAmountInput.text()))
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
 
             else:
-                threading.Thread(target=TradeManager.stop_market_sell, args=(self, selection, self.stopOrderPriceInput.text(), self.stopOrderAmountInput.text())).start()
 
-                Util.show_info_dialog(self, "Order Info", "Stop Market Sell Executed On Account " + selection)
-
+                thread = StopMarketSellThread(selection, float(self.stopOrderPriceInput.text()), float(self.stopOrderAmountInput.text()))
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
+                
         except Exception as e:
             error_dialog = QErrorMessage()
             error_dialog.showMessage(str(e))
@@ -387,19 +424,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
+            config = ConfigManager.get_config()
+
             selection = str(self.limitOrderComboBox.currentText())
 
             if selection == "All":
                 
-                threading.Thread(target=TradeManager.limit_buy_all, args=(self, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
-                
-                Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On All Accounts")
+                for x in config.tradeApis:
+
+                    thread = LimitBuyThread(x, float(self.limitPriceInput.text()), float(self.limitAmountInput.text()))
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
 
             else:
-                
-                threading.Thread(target=TradeManager.limit_buy, args=(self, selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
-
-                Util.show_info_dialog(self, "Order Info", "Limit Buy Executed On Account " + selection)
+                thread = LimitBuyThread(selection, float(self.limitPriceInput.text()), float(self.limitAmountInput.text()))
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -410,19 +452,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         try:
 
+            config = ConfigManager.get_config()
+
             selection = str(self.limitOrderComboBox.currentText())
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.limit_sell_all, args=(self, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
+                for x in config.tradeApis:
 
-                Util.show_info_dialog(self, "Order Info", "Limit Sell Executed")
+                    thread = LimitSellThread(x, float(self.limitPriceInput.text()), float(self.limitAmountInput.text()))
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
 
             else:
-
-                threading.Thread(target=TradeManager.limit_sell, args=(self, selection, self.limitPriceInput.text(), self.limitAmountInput.text())).start()
-
-                Util.show_info_dialog(self, "Order Info", "Limit Sell Executed On Account " + selection)
+                
+                thread = LimitSellThread(selection, float(self.limitPriceInput.text()), float(self.limitAmountInput.text()))
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
         except Exception as e:
             error_dialog = QErrorMessage()
@@ -431,12 +479,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def do_close_position(self, accountid):
 
-        threading.Thread(target=TradeManager.close_position, args=(self, accountid,)).start()
+        thread = ClosePositionThread(accountid)
+        thread.signeler.connect(self.show_dialogs)
+        thread.start()
+        self.runningThreads.append(thread)
                 
-        Util.show_info_dialog(self, "Order Info", "Position Closed On Account " + accountid)
-
-
     def do_close_positions(self):
+
+        config = ConfigManager.get_config()
 
         try:
 
@@ -444,15 +494,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.close_all_positions, args=(self, )).start()
-                
-                Util.show_info_dialog(self, "Order Info", "All Positions On All Accounts Closed")
+                for x in config.tradeApis:
 
+                    thread = ClosePositionThread(x)
+                    thread.signeler.connect(self.show_dialogs)
+                    thread.start()
+                    self.runningThreads.append(thread)
+                
             else:
 
-                threading.Thread(target=TradeManager.close_position, args=(selection,)).start()
-
-                Util.show_info_dialog(self, "Order Info", "Position Closed on Account " + selection)
+                thread = ClosePositionThread(selection)
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
         except Exception as e:
             error_dialog = QErrorMessage(self)
@@ -462,9 +516,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def do_cancel_all_open_orders(self):
 
+        config = ConfigManager.get_config()
+
         try:
             
-            threading.Thread(target=TradeManager.cancel_all_open_orders, args=(self, )).start()
+            for x in config.tradeApis:
+
+                thread = CancelOpenOrdersThread(x)
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
             Util.show_info_dialog(self, "Order Info", "All Open Orders On All Accounts Cancelled")
 
@@ -475,9 +536,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def do_cancel_all_stop_orders(self):
 
+        config = ConfigManager.get_config()
+
         try:
             
-            threading.Thread(target=TradeManager.cancel_all_open_stop_orders, args=(self, )).start()
+            for x in config.tradeApis:
+
+                thread = CancelOpenStopOrdersThread(x)
+                thread.signeler.connect(self.show_dialogs)
+                thread.start()
+                self.runningThreads.append(thread)
 
             Util.show_info_dialog(self, "Order Info", "All Stop Orders On All Accounts Cancelled")
 
@@ -488,9 +556,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def do_cancel_order(self, data):
 
-        threading.Thread(target=TradeManager.cancel_open_order, args=(self, data[0], data[1], )).start()
+        thread = CancelOpenOrderThread(data[0], data[1])
+        thread.signeler.connect(self.show_dialogs)
+        thread.start()
+        self.runningThreads.append(thread)
 
-        Util.show_info_dialog(self, "Order Info", "Order Cancelled")
+    def show_dialogs(self, success, title, text):
+
+        if success:
+            Util.show_info_dialog(self, title, text)
+        else:
+            Util.show_error_dialog(self, title, text)
+
+
 
 def main():
     ConfigManager.get_config()

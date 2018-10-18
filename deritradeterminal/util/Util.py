@@ -79,8 +79,7 @@ ______          _ _____ _          _ _
        msg.setWindowTitle(title)
        p = parent.frameGeometry().center() - QtCore.QRect(QtCore.QPoint(), msg.sizeHint()).center()
        msg.move(p)
-      
-       retval = msg.exec_()
+       msg.exec_()
 
     @staticmethod
     def show_error_dialog(parent, title, text):
@@ -91,7 +90,6 @@ ______          _ _____ _          _ _
         msg.setWindowTitle(title)
         p = parent.frameGeometry().center() - QtCore.QRect(QtCore.QPoint(), msg.sizeHint()).center()
         msg.move(p)
-
-        retval = msg.exec_()
+        msg.exec_()
 
 
