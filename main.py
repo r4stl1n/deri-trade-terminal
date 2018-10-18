@@ -57,7 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.stopOrderComboBox.addItem(x)
 
 
-        self.currentPositionsTable.setColumnCount(7)
+        self.currentPositionsTable.setColumnCount(8)
 
         index = 0
         for x in range(13):
@@ -127,30 +127,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.orderButtonMap = {}
         self.runningThreads = []
 
-    def update_positions(self, index, account, insturment, size, averageprice, pnl, initialmargin):
+    def update_positions(self, index, account, insturment, size, sizeb, averageprice, pnl, initialmargin):
 
         self.currentPositionsTable.setItem(index, 0,  QTableWidgetItem(account))
         self.currentPositionsTable.setItem(index, 1,  QTableWidgetItem(insturment))
         self.currentPositionsTable.setItem(index, 2,  QTableWidgetItem(size))
-        self.currentPositionsTable.setItem(index, 3,  QTableWidgetItem(averageprice))
-        self.currentPositionsTable.setItem(index, 4,  QTableWidgetItem(pnl))
+        self.currentPositionsTable.setItem(index, 3,  QTableWidgetItem(sizeb))
+        self.currentPositionsTable.setItem(index, 4,  QTableWidgetItem(averageprice))
+        self.currentPositionsTable.setItem(index, 5,  QTableWidgetItem(pnl))
         
 
         if pnl:
 
-            self.currentPositionsTable.setItem(index, 5,  QTableWidgetItem(str(format(Util.percentageOf(pnl,initialmargin), ".2f")) + str("%")))
+            self.currentPositionsTable.setItem(index, 6,  QTableWidgetItem(str(format(Util.percentageOf(pnl,initialmargin), ".2f")) + str("%")))
 
             if float(str(pnl)) > 0:
-                self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(27,94,32))
                 self.currentPositionsTable.item(index, 5).setBackground(QtGui.QColor(27,94,32))
+                self.currentPositionsTable.item(index, 6).setBackground(QtGui.QColor(27,94,32))
             elif float(str(pnl)) < 0:
-                self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(213,0,0))
                 self.currentPositionsTable.item(index, 5).setBackground(QtGui.QColor(213,0,0))
+                self.currentPositionsTable.item(index, 6).setBackground(QtGui.QColor(213,0,0))
             else:
-                self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(26,35,126))
                 self.currentPositionsTable.item(index, 5).setBackground(QtGui.QColor(26,35,126))
+                self.currentPositionsTable.item(index, 6).setBackground(QtGui.QColor(26,35,126))
         else:
-            self.currentPositionsTable.setItem(index, 5,  QTableWidgetItem(""))
+            self.currentPositionsTable.setItem(index, 6,  QTableWidgetItem(""))
 
         self.currentPositionsTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.currentPositionsTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
@@ -158,11 +159,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.currentPositionsTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.currentPositionsTable.item(index, 4).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.currentPositionsTable.item(index, 5).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.currentPositionsTable.item(index, 6).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
         orderButton = QPushButton(self.currentPositionsTable)
         orderButton.setText("Close Position")
         orderButton.clicked.connect(partial(self.do_close_position, account))
-        self.currentPositionsTable.setCellWidget(index, 6, orderButton)
+        self.currentPositionsTable.setCellWidget(index, 7, orderButton)
 
         self.currentPositionsTable.update()
 

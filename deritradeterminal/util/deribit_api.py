@@ -152,7 +152,7 @@ class RestClient(object):
             "quantity": quantity,
             "stopPx": price,
             "type": "stop_market",
-            "execInst": "index_price",
+            "execInst": "mark_price",
             "time_in_force": "good_till_cancel",
 
         }
@@ -166,7 +166,7 @@ class RestClient(object):
             "quantity": quantity,
             "stopPx": price,
             "type": "stop_market",
-            "execInst": "index_price",
+            "execInst": "mark_price",
             "time_in_force": "good_till_cancel",
         }
 
