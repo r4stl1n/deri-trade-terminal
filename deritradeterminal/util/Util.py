@@ -92,4 +92,8 @@ ______          _ _____ _          _ _
         msg.move(p)
         msg.exec_()
 
+    @staticmethod
+    def percentageOf(part, whole):
+        return 100 * float(part)/float(whole)
+
 

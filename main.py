@@ -1,8 +1,6 @@
 import sys
-import threading
 
 from functools import partial
-
 
 from deriui import Ui_MainWindow
 
@@ -15,7 +13,6 @@ from PyQt5 import QtWebEngineWidgets
 from deritradeterminal.util.Util import Util
 from deritradeterminal.util.QDarkPalette import QDarkPalette
 
-from deritradeterminal.managers.TradeManager import TradeManager
 from deritradeterminal.managers.ConfigManager import ConfigManager
 
 from deritradeterminal.threads.OrdersUpdateThread import OrdersUpdateThread
@@ -60,7 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.stopOrderComboBox.addItem(x)
 
 
-        self.currentPositionsTable.setColumnCount(6)
+        self.currentPositionsTable.setColumnCount(7)
 
         index = 0
         for x in range(13):
@@ -130,26 +127,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.orderButtonMap = {}
         self.runningThreads = []
 
-    def update_positions(self, index, account, insturment, size, averageprice, pnl):
+    def update_positions(self, index, account, insturment, size, averageprice, pnl, initialmargin):
 
         self.currentPositionsTable.setItem(index, 0,  QTableWidgetItem(account))
         self.currentPositionsTable.setItem(index, 1,  QTableWidgetItem(insturment))
         self.currentPositionsTable.setItem(index, 2,  QTableWidgetItem(size))
         self.currentPositionsTable.setItem(index, 3,  QTableWidgetItem(averageprice))
         self.currentPositionsTable.setItem(index, 4,  QTableWidgetItem(pnl))
+        
 
         if pnl:
+
+            self.currentPositionsTable.setItem(index, 5,  QTableWidgetItem(str(format(Util.percentageOf(pnl,initialmargin), ".2f")) + str("%")))
+
             if float(str(pnl)) > 0:
                 self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(27,94,32))
+                self.currentPositionsTable.item(index, 5).setBackground(QtGui.QColor(27,94,32))
             elif float(str(pnl)) < 0:
                 self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(213,0,0))
+                self.currentPositionsTable.item(index, 5).setBackground(QtGui.QColor(213,0,0))
             else:
                 self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(26,35,126))
+                self.currentPositionsTable.item(index, 5).setBackground(QtGui.QColor(26,35,126))
+        else:
+            self.currentPositionsTable.setItem(index, 5,  QTableWidgetItem(""))
+
+        self.currentPositionsTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.currentPositionsTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.currentPositionsTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.currentPositionsTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.currentPositionsTable.item(index, 4).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.currentPositionsTable.item(index, 5).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
         orderButton = QPushButton(self.currentPositionsTable)
         orderButton.setText("Close Position")
         orderButton.clicked.connect(partial(self.do_close_position, account))
-        self.currentPositionsTable.setCellWidget(index, 5, orderButton)
+        self.currentPositionsTable.setCellWidget(index, 6, orderButton)
 
         self.currentPositionsTable.update()
 
@@ -162,6 +175,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             index = 0
 
             for ask in cAsks:
+                
                 self.orderbookTable.setItem(index, 0, QTableWidgetItem(str(ask['price'])))
                 self.orderbookTable.setItem(index, 1, QTableWidgetItem(str(ask['quantity'])))
                 self.orderbookTable.setItem(index, 2, QTableWidgetItem(str(ask['cm_amount'])))
@@ -169,6 +183,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.orderbookTable.item(index, 0).setBackground(QtGui.QColor(213,0,0))
                 self.orderbookTable.item(index, 1).setBackground(QtGui.QColor(213,0,0))
                 self.orderbookTable.item(index, 2).setBackground(QtGui.QColor(213,0,0))
+
+                self.orderbookTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.orderbookTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.orderbookTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
 
                 index = index + 1
@@ -178,7 +196,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.orderbookTable.setItem(12, 1, QTableWidgetItem(""))
             self.orderbookTable.setItem(12, 2, QTableWidgetItem("I: " + str(indexprice)))
 
+            self.orderbookTable.item(12, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.orderbookTable.item(12, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.orderbookTable.item(12, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+
             for bid in cBids:
+                
                 self.orderbookTable.setItem(index, 0, QTableWidgetItem(str(bid['price'])))
                 self.orderbookTable.setItem(index, 1, QTableWidgetItem(str(bid['quantity'])))
                 self.orderbookTable.setItem(index, 2, QTableWidgetItem(str(bid['cm_amount'])))
@@ -186,6 +209,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.orderbookTable.item(index, 0).setBackground(QtGui.QColor(27,94,32))
                 self.orderbookTable.item(index, 1).setBackground(QtGui.QColor(27,94,32))
                 self.orderbookTable.item(index, 2).setBackground(QtGui.QColor(27,94,32))
+
+                self.orderbookTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.orderbookTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.orderbookTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
                 index = index + 1
 
@@ -221,6 +248,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 orderButton.clicked.connect(partial(self.do_cancel_order, [str(order[0]),str(order[4])]))
                 self.openOrderTable.setCellWidget(index, 4, orderButton)
 
+                self.openOrderTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.openOrderTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.openOrderTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.openOrderTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+    
                 index = index + 1
 
             self.openOrderTable.update()
@@ -254,6 +286,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 orderButton.clicked.connect(partial(self.do_cancel_order, [str(order[0]),str(order[4])]))
                 self.stopOrderTable.setCellWidget(index, 4, orderButton)
 
+                self.stopOrderTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.stopOrderTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.stopOrderTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.stopOrderTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+
                 index = index + 1
 
             self.stopOrderTable.update()
@@ -276,6 +313,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.accountInfoTable.setItem(index, 4, QTableWidgetItem(str(account[4])))
                 self.accountInfoTable.setItem(index, 5, QTableWidgetItem(str(account[5])))
 
+                self.accountInfoTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 4).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.accountInfoTable.item(index, 5).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+
                 index = index + 1
 
             self.accountInfoTable.update()
@@ -292,10 +336,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             index = 0
 
             for trade in trades:
+
                 self.recentTradesTable.setItem(index, 0, QTableWidgetItem(str(trade[0])))
                 self.recentTradesTable.setItem(index, 1, QTableWidgetItem(str(trade[1])))
                 self.recentTradesTable.setItem(index, 2, QTableWidgetItem(str(trade[2])))
                 self.recentTradesTable.setItem(index, 3, QTableWidgetItem(str(trade[3])))
+
+                if self.recentTradesTable.item(index, 0):
+                    self.recentTradesTable.item(index, 0).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                    self.recentTradesTable.item(index, 1).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                    self.recentTradesTable.item(index, 2).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                    self.recentTradesTable.item(index, 3).setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
                 if trade[0] == "Long":
                     if self.recentTradesTable.item(index, 0):

@@ -8,7 +8,7 @@ from deritradeterminal.managers.ConfigManager import ConfigManager
 
 class PositionsUpdateThread(QThread):
 
-    signeler = pyqtSignal(int,str,str,str,str,str) 
+    signeler = pyqtSignal(int,str,str,str,str,str,str) 
 
     def collectProcessData(self):
 
@@ -35,10 +35,10 @@ class PositionsUpdateThread(QThread):
                     else:
                         direction = "Short"
 
-                    self.signeler.emit(index, x, direction, str(position["size"]), str(format(position["averagePrice"], '.4f')), str(format(position["profitLoss"], '.8f')))
+                    self.signeler.emit(index, x, direction, str(position["size"]), str(format(position["averagePrice"], '.4f')), str(format(position["profitLoss"], '.8f')), str(format(position["initialMargin"], '.8f')))
 
                 else:
-                    self.signeler.emit(index, x, "No Position", "", "", "")
+                    self.signeler.emit(index, x, "No Position", "", "", "", "")
 
                 index = index + 1
 
