@@ -85,7 +85,8 @@ class RestClient(object):
 
     def getlasttrades(self, instrument, count=None, since=None):
         options = {
-            'instrument': instrument
+            'instrument': instrument,
+            'count': 30
         }
 
         if since:
