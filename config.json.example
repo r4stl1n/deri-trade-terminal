@@ -1,0 +1,1 @@
+{"py/object": "deritradeterminal.models.ConfigModel.ConfigModel", "apiUrl": "https://test.deribit.com", "tradeApis": {"AccountName":["apikey","apisecret"]}, "tradeInsturment": "BTC-PERPETUAL"}
