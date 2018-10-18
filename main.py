@@ -301,7 +301,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.market_buy_all, args=(self, )).start()
+                threading.Thread(target=TradeManager.market_buy_all, args=(self, self.marketAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Buy Executed On All Accounts")
 
@@ -324,7 +324,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if selection == "All":
 
-                threading.Thread(target=TradeManager.market_sell_all, args=(self, )).start()
+                threading.Thread(target=TradeManager.market_sell_all, args=(self, self.marketAmountInput.text())).start()
 
                 Util.show_info_dialog(self, "Order Info", "Market Sell Executed On All Accounts")
 
