@@ -131,11 +131,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.runningThreads = []
 
     def update_positions(self, index, account, insturment, size, averageprice, pnl):
+
         self.currentPositionsTable.setItem(index, 0,  QTableWidgetItem(account))
-        self.currentPositionsTable.setItem(index, 1, QTableWidgetItem(insturment))
-        self.currentPositionsTable.setItem(index, 2, QTableWidgetItem(size))
-        self.currentPositionsTable.setItem(index, 3, QTableWidgetItem(averageprice))
-        self.currentPositionsTable.setItem(index, 4, QTableWidgetItem(pnl))
+        self.currentPositionsTable.setItem(index, 1,  QTableWidgetItem(insturment))
+        self.currentPositionsTable.setItem(index, 2,  QTableWidgetItem(size))
+        self.currentPositionsTable.setItem(index, 3,  QTableWidgetItem(averageprice))
+        self.currentPositionsTable.setItem(index, 4,  QTableWidgetItem(pnl))
+
+        if pnl:
+            if float(str(pnl)) > 0:
+                self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(27,94,32))
+
+            if float(str(pnl)) < 0:
+                self.currentPositionsTable.item(index, 4).setBackground(QtGui.QColor(213,0,0))
 
         orderButton = QPushButton(self.currentPositionsTable)
         orderButton.setText("Close Position")
