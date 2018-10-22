@@ -17,7 +17,10 @@ class CancelOpenOrdersThread(QThread):
 
             client = RestClient(config.tradeApis[self.accountid][0], config.tradeApis[self.accountid][1], ConfigManager.get_config().apiUrl)
 
-            client.cancelall()
+            orders = client.getopenorders()
+
+            for order in orders:
+                client.cancel(order['orderId'])
 
             self.signeler.emit(True, "Cancel All Open Orders Success", "Closed All Open Orders On Account: " + str(self.accountid))
 
